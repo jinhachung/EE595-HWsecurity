@@ -10,6 +10,7 @@ class Log:
     def __init__(self, logging_method, name):
         # sanity check
         if not logging_method in LOGGING_METHODS:
+            logging.debug(f"Log(): logging_method {logging_method} invalid")
             exit(-1)
         self.logging_method = logging_method
         ''' name is in form of "log#n-fxl" (n: log ID)
@@ -29,6 +30,7 @@ class Log:
 
     def add_count(self, delta):
         self.count += delta
+        return self.count
 
     def print_info(self, debug = True):
         if debug:
@@ -37,22 +39,30 @@ class Log:
             print(f"{self.name}: affected {self.count} times")
 
 class SecurityGuard:
-    def __init__(self, num_floors, num_lines, logging_method):
-        # sanity check
+    def __init__(self, num_floors, num_lines, threshold, logging_method, debug = True):
+        #sanity check
         if num_floors <= 0:
+            logging.debug(f"SecurityGuard(): num_floors {num_floors} invalid")
             exit(-1)
         if num_lines <= 0:
+            logging.debug(f"SecurityGuard(): num_lines {num_lines} invalid")
+            exit(-1)
+        if threshold <= 0:
+            logging.debug(f"SecurityGuard(): threshold {num_threshold} invalid")
             exit(-1)
         if not logging_method in LOGGING_METHODS:
+            logging.debug(f"SecurityGuard(): logging_method {logging_method} invalid")
             exit(-1)
 
         # number of floors in apartment
         # number of lines (rooms) in a floor
         self.num_floors = num_floors
         self.num_lines = num_lines
-        self.total_cost = 0
-        self.total_logs = 0
+        self.threshold = threshold
         self.logging_method = logging_method
+        self.debug = debug
+        self.total_resets = 0
+        self.total_logs = 0
         '''
         if self.logging_method == PER_APARTMENT:
             pass
@@ -83,12 +93,28 @@ class SecurityGuard:
             total_count += self.logs[f][l].get_count()
         return total_count
 
-    def print_all_logs(self, debug = True):
+    def print_all_logs(self):
         for f in range(self.num_floors):
-            if debug:
+            if self.debug:
                 logging.debug("")
             else:
                 print("")
             for l in range(self.num_lines):
-                self.logs[f][l].print_info(debug)
+                self.logs[f][l].print_info(self.debug)
 
+    def slam_door(self, floor, line):
+        if (floor < 0) or (floor >= self.num_floors) or (line < 0) or (line >= self.num_lines):
+            logging.debug(f"SecurityGuard.slam_door(): floor {floor}, line {line} invalid")
+            exit(-1)
+        floorlist = []
+        if (floor - 1 > 0) and (floor - 1 < self.num_floors):
+            floorlist.append(floor - 1)
+        if (floor + 1 > 0) and (floor + 1 < self.num_floors):
+            floorlist.append(floor + 1)
+
+        for f in floorlist:
+            if self.logs[f][line].add_count(1) >= self.threshold:
+                print(f"A door broke while slamming apartment[{floor}][{line}]:", end = "\t")
+                self.logs[f][line].print_info(False)
+                return False
+            return True
