@@ -145,19 +145,19 @@ class SecurityGuard:
                 logging.debug(f"Reset #{self.total_resets} @ logs [*][*]")
                 self.total_resets += 1
         elif self.logging_method == PER_FLOOR:
-            if get_sum_floor(floor) >= self.log_reset_timer:
+            if self.get_sum_floor(floor) >= self.log_reset_timer:
                 for l in range(self.num_lines):
                     self.logs[floor][l].reset()
                 logging.debug(f"Reset #{self.total_resets} @ logs [{floor}][*]")
                 self.total_resets += 1
         elif self.logging_method == PER_LINE:
-            if get_sum_line(line) >= self.log_reset_timer:
+            if self.get_sum_line(line) >= self.log_reset_timer:
                 for f in range(self.num_floors):
                     self.logs[f][line].reset()
                 logging.debug(f"Reset #{self.total_resets} @ logs [*][{line}]")
                 self.total_resets += 1
         else:#logging_method == PER_DOOR
-            if self.logs[floor][line] >= self.log_reset_timer:
+            if self.logs[floor][line].get_count() >= self.log_reset_timer:
                 # there's really no reason for the reset timer to be a different value to the threshold
                 # but let's just keep it this way so that the code is kept simple, nimble, and humble
                 self.logs[floor][line].reset()
