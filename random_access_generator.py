@@ -53,6 +53,15 @@ class RandomAccessGenerator:
                     else:
                         # assa
                         self.params["cold_households"].append(household)
+                # avoid hot households from being completely empty
+                # cold households can also be completely empty,
+                # but this is highly unlikely so just keep my fingers crossed
+                if len(self.params["hot_households"]) == 0:
+                    household = dict()
+                    household["floor"] = 0
+                    household["line"] = 0
+                    self.params["hot_households"].append(household)
+                    self.params["cold_households"].pop(0)
 
     def get_pseudogaussian_centered_location(self):
         household = dict()
@@ -90,11 +99,11 @@ class RandomAccessGenerator:
             location["floor"] = floor
             location["line"] = line
         elif self.access_pattern == FEW_HOT:
-            if random.randint(1, 100) <= self.params["hot_percentage"]:
-                # accessing assa, wow this rarely happens!
+            if random.randint(1, 100) > self.params["hot_percentage"]:
+                # accessing inssa, typical inssa
                 household = self.params["hot_households"][random.randint(0, len(self.params["hot_households"]) - 1)]
             else:
-                # accessing inssa, typical inssa
+                # accessing assa, wow this rarely happens!
                 household = self.params["cold_households"][random.randint(0, len(self.params["cold_households"]) - 1)]
             location["floor"] = household["floor"]
             location["line"] = household["line"]
