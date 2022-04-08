@@ -83,10 +83,10 @@ class RandomAccessGenerator:
             # choose floor first uniformly
             floor = random.randint(0, self.params["num_floors"] - 1)
             # this is buggy if num_lines is 1, but what kind of a weird apartment is that?
-            if floor < self.params["num_floors"] / 2:
-                line = random.randint(self.params["num_lines"] / 2, self.params["num_lines"] - 1)
+            if floor < int(self.params["num_floors"] / 2):
+                line = random.randint(int(self.params["num_lines"] / 2), self.params["num_lines"] - 1)
             else:
-                line = random.randint(0, self.params["num_lines"] - 1)
+                line = random.randint(0, int(self.params["num_lines"] / 2) - 1)
             location["floor"] = floor
             location["line"] = line
         elif self.access_pattern == FEW_HOT:
