@@ -1,6 +1,6 @@
 import logging
 import random
-import numpy as np
+import numpy
 
 UNIFORM                 = "uniform"
 TWO_QUADRANTS           = "two_quadrants"
@@ -67,14 +67,14 @@ class RandomAccessGenerator:
         household = dict()
         
         x = self.params["num_floors"]
-        f = max(0, min(x - 1, int(random.normal(loc = x / 2, scale = x / 5.15))))
+        f = max(0, min(x - 1, int(numpy.random.normal(loc = x / 2, scale = x / 5.15))))
         #f = int(random.normal(loc = x / 2, scale = x / 5.15))
         #f = max(0, f)
         #f = min(f, x - 1)
         household["floor"] = f
 
         x = self.params["num_lines"]
-        l = max(0, min(x - 1, int(random.normal(loc = x / 2, scale = x / 5.15))))
+        l = max(0, min(x - 1, int(numpy.random.normal(loc = x / 2, scale = x / 5.15))))
         #l = int(random.normal(loc = x / 2, scale = x / 5.15))
         #l = max(0, l)
         #l = min(l, x - 1)
