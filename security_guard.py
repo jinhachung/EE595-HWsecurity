@@ -20,7 +20,7 @@ class Log:
         '''
         self.name = name
         self.count = 0
-        logging.debug(f"Created {self.name}")
+        #logging.debug(f"Created {self.name}")
 
     def reset(self):
         self.count = 0
@@ -68,6 +68,8 @@ class SecurityGuard:
         self.logging_method = logging_method
         self.log_reset_timer = log_reset_timer
         self.debug = debug
+        self.infiltrated = False
+        self.total_slams = 0
         self.total_resets = 0
         self.total_logs = 0
         # set self.logs depending on type of logging method
@@ -105,6 +107,12 @@ class SecurityGuard:
             for l in range(self.num_lines):
                 self.logs[f][l].print_info(self.debug)
 
+    def print_status(self):
+        if self.infiltrated:
+            print(f"The apartment has been infiltrated, after surviving {self.total_slams} slams with {self.total_resets} log resets")
+        else:
+            print(f"The apartment has not been infiltrated, surviving {self.total_slams} slams with {self.total_resets} log resets.")
+
     def slam_door(self, floor, line):
         if (floor < 0) or (floor >= self.num_floors) or (line < 0) or (line >= self.num_lines):
             logging.debug(f"SecurityGuard.slam_door(): floor {floor}, line {line} invalid")
@@ -119,10 +127,13 @@ class SecurityGuard:
             # check if any of the doors have been opened
             if self.logs[f][line].add_count(1) > self.threshold:
                 print(f"A door broke while slamming apartment[{floor}][{line}]:", end = "\t")
-                self.logs[f][line].print_info(False)
+                self.logs[f][line].print_info(debug = False)
+                self.infiltrated = True
+                #self.print_status()
                 return False
             # check if guard should reset any of the logs (screw them nails)
             self.check_for_reset(f, line)
+            self.total_slams += 1
             return True
 
     def check_for_reset(self, floor, line):
