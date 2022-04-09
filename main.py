@@ -14,27 +14,33 @@ def main():
     nf = 20
     nl = 10
     th = 10
-    lrt = 10
-    tradeoff_var = 4 / 5
+    lrt = th
     db = True
     p = dict()
     p["num_floors"] = nf
     p["num_lines"] = nl
     p["hot_percentage"] = 10
+    '''
+    lower tradeoff_var = more secure, higher cost
+    higher tradeoff_var = less secure, lower cost
+    1.0 is no tradeoff
+    input: 1, 2, ..., 20
+    '''
+    tradeoff_var = 0.1 * int(sys.argv[3])
     
     # PER_APARTMENT, PER_FLOOR, PER_LINE, PER_DOOR
     if sys.argv[1] == "per_apartment":
         lm = sg.PER_APARTMENT
-        th = int(th * nf * nl * tradeoff_var * tradeoff_var)
+        lrt = int(lrt * nf * nl * tradeoff_var * tradeoff_var)
     elif sys.argv[1] == "per_floor":
         lm = sg.PER_FLOOR
-        th = int(th * nf * tradeoff_var)
+        lrt = int(lrt * nf * tradeoff_var)
     elif sys.argv[1] == "per_line":
         lm = sg.PER_LINE
-        th = int(th * nl * tradeoff_var)
+        lrt = int(lrt * nl * tradeoff_var)
     elif sys.argv[1] == "per_door":
         lm = sg.PER_DOOR
-        th = int(th)
+        lrt = int(lrt)
     else:
         print(f"!!!!! Wrong logging method argument: {sys.argv[1]}")
         exit(-1)
