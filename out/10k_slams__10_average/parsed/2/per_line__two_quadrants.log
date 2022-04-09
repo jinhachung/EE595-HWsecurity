@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/2/per_line__two_quadrants.log
+Success: 1 / Total: 10, success rate: 0.10
+In case of success, there was an average of 4995.00 resets per run
+In case of failure, the apartment managed to tank 28403.00 slams

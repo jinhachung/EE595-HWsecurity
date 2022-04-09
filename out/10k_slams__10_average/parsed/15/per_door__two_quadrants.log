@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/15/per_door__two_quadrants.log
+Success: 10 / Total: 10, success rate: 1.00
+In case of success, there was an average of 9960.80 resets per run
+No failed runs
