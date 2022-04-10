@@ -34,10 +34,10 @@ def main():
         lrt = int(lrt * nf * nl * tradeoff_var * tradeoff_var)
     elif sys.argv[1] == "per_floor":
         lm = sg.PER_FLOOR
-        lrt = int(lrt * nf * tradeoff_var)
+        lrt = int(lrt * nl * tradeoff_var)
     elif sys.argv[1] == "per_line":
         lm = sg.PER_LINE
-        lrt = int(lrt * nl * tradeoff_var)
+        lrt = int(lrt * nf * tradeoff_var)
     elif sys.argv[1] == "per_door":
         lm = sg.PER_DOOR
         lrt = int(lrt)
