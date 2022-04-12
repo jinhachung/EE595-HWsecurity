@@ -26,7 +26,7 @@ def main():
     1.0 is no tradeoff
     input: 1, 2, ..., 20
     '''
-    tradeoff_var = 0.1 * int(sys.argv[3])
+    tradeoff_var = 0.1 * int(sys.argv[4])
     
     # PER_APARTMENT, PER_FLOOR, PER_LINE, PER_DOOR
     if sys.argv[1] == "per_apartment":
@@ -54,18 +54,30 @@ def main():
         ap = rag.FEW_HOT
     elif sys.argv[2] == "gaussian":
         ap = rag.PSEUDOGAUSSIAN_CENTERED
+    elif sys.argv[2] == "sequential":
+        ap = rag.SEQUENTIAL
     else:
         print(f"!!!!! Wrong access pattern argument: {sys.argv[2]}")
         exit(-1)
+
+    # SINGLE, TRIPLE, ALL
+    if sys.argv[3] == "single":
+        fs = sg.SINGLE
+    elif sys.argv[3] == "triple":
+        fs = sg.TRIPLE
+    elif sys.argv[3] == "all":
+        fs = sg.ALL
+    else:
+        print(f"!!!!! Wrong faulty scale argument: {sys.argv[3]}")
 
     guard = sg.SecurityGuard(num_floors = nf,
                              num_lines = nl,
                              threshold = th,
                              logging_method = lm,
+                             faulty_scale = fs,
                              log_reset_timer = lrt,
                              debug = db)
-    gen = rag.RandomAccessGenerator(access_pattern = ap,
-                                    params = p)
+    gen = rag.RandomAccessGenerator(access_pattern = ap, params = p)
     #guard.print_all_logs()
     for i in range(num_slams):
         location = gen.generate_random_access()
