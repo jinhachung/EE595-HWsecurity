@@ -26,6 +26,9 @@ ACCESS_PATTERNS = [UNIFORM, TWO_QUADRANTS, FEW_HOT, PSEUDOGAUSSIAN_CENTERED]
                             because P[x <= Z = 2.575] = 0.995, we choose
                             std. dev = x / 5.15 --> N(2/x, x/5.15)
                             requires: num_floors, num_lines
+5) SEQUENTIAL:              accesses occur sequentially (floor, line):
+                            (0, 0), (0, 1), (0, 2), ... (0, L - 1)
+                            (1, 0), (1, 1), (1, 2), ... (1, L - 1)
 '''
 
 # THE ALL NEW RAG, stop ragging!
@@ -62,6 +65,11 @@ class RandomAccessGenerator:
                     household["line"] = 0
                     self.params["hot_households"].append(household)
                     self.params["cold_households"].pop(0)
+        if self.access_pattern == SEQUENTIAL:
+            # initialize "next access"
+            self.next_access = dict()
+            self.next_access["floor"] = 0
+            self.next_access["line"] = 0
 
     def get_pseudogaussian_centered_location(self):
         household = dict()
@@ -107,11 +115,23 @@ class RandomAccessGenerator:
                 household = self.params["cold_households"][random.randint(0, len(self.params["cold_households"]) - 1)]
             location["floor"] = household["floor"]
             location["line"] = household["line"]
-        else:#self.access_pattern == PSEUDOGAUSSIAN_CENTERED
+        elif self.access_pattern == PSEUDOGAUSSIAN_CENTERED:
             household = self.get_pseudogaussian_centered_location()
             location["floor"] = household["floor"]
             location["line"] = household["line"]
-
+        else:#self.access_pattern == SEQUENTIAL:
+            # generate access for "next_access" state
+            location["floor"] = self.next_access["floor"]
+            location["line"] = self.next_access["line"]
+            # set new "next_access" state
+            self.next_access["line"] += 1
+            if self.next_access["line"] >= self.params["num_lines"]:
+                # wrap around
+                self.next_access["line"] = 0
+                self.next_access["floor"] += 1
+                if self.next_access["floor"] >= self.params["num_floors"]:
+                    # wrap around
+                    self.next_access["floor"] = 0
         return location
 
 
