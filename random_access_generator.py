@@ -6,7 +6,8 @@ UNIFORM                 = "uniform"
 TWO_QUADRANTS           = "two_quadrants"
 FEW_HOT                 = "few_hot"
 PSEUDOGAUSSIAN_CENTERED = "pseudogaussian_centered"
-ACCESS_PATTERNS = [UNIFORM, TWO_QUADRANTS, FEW_HOT, PSEUDOGAUSSIAN_CENTERED]
+SEQUENTIAL              = "sequential"
+ACCESS_PATTERNS = [UNIFORM, TWO_QUADRANTS, FEW_HOT, PSEUDOGAUSSIAN_CENTERED, SEQUENTIAL]
 '''
 1) UNIFORM:                 chance at choosing floor and line are uniformly distributed
                             requires: num_floors, num_lines
