@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/all__tv_1__per_line__uniform.log
+Success: 10 / Total: 10, success rate: 1.00
+In case of success, there was an average of 231253.00 resets per run
+No failed runs

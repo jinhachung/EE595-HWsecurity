@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/triple__tv_2__per_line__few_hot.log
+Success: 3 / Total: 10, success rate: 0.30
+In case of success, there was an average of 20698.67 resets per run
+In case of failure, the apartment managed to tank 7992.57 slams

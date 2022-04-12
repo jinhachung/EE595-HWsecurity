@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/single__tv_7__per_floor__sequential.log
+Success: 10 / Total: 10, success rate: 1.00
+In case of success, there was an average of 6604.00 resets per run
+No failed runs

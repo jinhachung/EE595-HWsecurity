@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/all__tv_4__per_line__gaussian.log
+Success: 5 / Total: 10, success rate: 0.50
+In case of success, there was an average of 61556.00 resets per run
+In case of failure, the apartment managed to tank 48504.20 slams

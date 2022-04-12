@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/all__tv_5__per_apartment__two_quadrants.log
+Success: 9 / Total: 10, success rate: 0.90
+In case of success, there was an average of 4624.22 resets per run
+In case of failure, the apartment managed to tank 6751.00 slams

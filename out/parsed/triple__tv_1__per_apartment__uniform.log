@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/triple__tv_1__per_apartment__uniform.log
+Success: 9 / Total: 9, success rate: 1.00
+In case of success, there was an average of 3930.89 resets per run
+No failed runs

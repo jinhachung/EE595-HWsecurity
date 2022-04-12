@@ -1,0 +1,4 @@
+Printing out parsing results for: ./out/raw/all__tv_2__per_line__gaussian.log
+Success: 10 / Total: 10, success rate: 1.00
+In case of success, there was an average of 123111.00 resets per run
+No failed runs
