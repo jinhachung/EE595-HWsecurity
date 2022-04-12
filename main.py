@@ -23,15 +23,14 @@ def main():
     '''
     lower tradeoff_var = more secure, higher cost
     higher tradeoff_var = less secure, lower cost
-    1.0 is no tradeoff
-    input: 1, 2, ..., 20
+    input: 1, 2, ..., 20 --> 0.02, ..., 0.40
     '''
-    tradeoff_var = 0.1 * int(sys.argv[4])
+    tradeoff_var = 0.02 * int(sys.argv[4])
     
     # PER_APARTMENT, PER_FLOOR, PER_LINE, PER_DOOR
     if sys.argv[1] == "per_apartment":
         lm = sg.PER_APARTMENT
-        lrt = int(lrt * nf * nl * tradeoff_var * tradeoff_var)
+        lrt = int(lrt * nf * nl * tradeoff_var)
     elif sys.argv[1] == "per_floor":
         lm = sg.PER_FLOOR
         lrt = int(lrt * nl * tradeoff_var)
