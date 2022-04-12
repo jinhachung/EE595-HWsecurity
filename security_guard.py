@@ -6,6 +6,11 @@ PER_LINE        = "per_line"
 PER_DOOR        = "per_door"
 LOGGING_METHODS = [PER_APARTMENT, PER_FLOOR, PER_LINE, PER_DOOR]
 
+SINGLE          = "single"
+TRIPLE          = "triple"
+ALL             = "all"
+FAULTY_SCALE    = [SINGLE, TRIPLE, ALL]
+
 class Log:
     def __init__(self, logging_method, name):
         # sanity check
@@ -44,6 +49,7 @@ class SecurityGuard:
                  num_lines,
                  threshold,
                  logging_method,
+                 faulty_scale,
                  log_reset_timer,
                  debug = True):
         #sanity check
@@ -66,6 +72,7 @@ class SecurityGuard:
         self.num_lines = num_lines
         self.threshold = threshold
         self.logging_method = logging_method
+        self.faulty_scale = faulty_scale
         self.log_reset_timer = log_reset_timer
         self.debug = debug
         self.infiltrated = False
@@ -123,18 +130,48 @@ class SecurityGuard:
         if (floor + 1 > 0) and (floor + 1 < self.num_floors):
             floorlist.append(floor + 1)
 
-        for f in floorlist:
-            # check if any of the doors have been opened
-            if self.logs[f][line].add_count(1) > self.threshold:
-                print(f"A door broke while slamming apartment[{floor}][{line}]:", end = "\t")
-                self.logs[f][line].print_info(debug = False)
-                self.infiltrated = True
-                #self.print_status()
-                return False
-            # check if guard should reset any of the logs (screw them nails)
-            self.check_for_reset(f, line)
-            self.total_slams += 1
-            return True
+        if self.faulty_scale == SINGLE:
+            for f in floorlist:
+                # check if any of the doors have been opened
+                if self.logs[f][line].add_count(1) > self.threshold:
+                    print(f"A door broke while slamming apartment[{floor}][{line}]:", end = "\t")
+                    self.logs[f][line].print_info(debug = False)
+                    self.infiltrated = True
+                    #self.print_status()
+                    return False
+                # check if guard should reset any of the logs (screw them nails)
+                self.check_for_reset(f, line)
+        elif self.faulty_scale == TRIPLE:
+            linelist = []
+            if (line - 1 > 0) and (line - 1 < self.num_lines):
+                linelist.append(line - 1)
+            if (line + 1 > 0) and (line + 1 < self.num_lines):
+                linelist.append(line + 1)
+            for f in floorlist:
+                for l in linelist:
+                    # check if any of the doors have been opened
+                    if self.logs[f][l].add_count(1) > self.threshold:
+                        print(f"A door broke while slamming apartment[{floor}][{line}]:", end = "\t")
+                        self.logs[f][l].print_info(debug = False)
+                        self.infiltrated = True
+                        #self.print_status()
+                        return False
+                    # check if guard should reset any of the logs (screw them nails)
+                    self.check_for_reset(f, l)
+        else:#self.faulty_scale == ALL:
+            for f in floorlist:
+                for l in range(self.num_lines):
+                    # check if any of the doors have been opened
+                    if self.logs[f][l].add_count(1) > self.threshold:
+                        print(f"A door broke while slamming apartment[{floor}][{line}]:", end = "\t")
+                        self.logs[f][l].print_info(debug = False)
+                        self.infiltrated = True
+                        #self.print_status()
+                        return False
+                    # check if guard should reset any of the logs (screw them nails)
+                    self.check_for_reset(f, l)
+        self.total_slams += 1
+        return True
 
     def check_for_reset(self, floor, line):
         if self.logging_method == PER_APARTMENT:
