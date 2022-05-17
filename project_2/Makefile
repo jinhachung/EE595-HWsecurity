@@ -1,7 +1,7 @@
 VECTOR_ADD := ./bin/vector_add
 
 CC := g++
-CPP_SUFFIC := cpp
+CPP_SUFFIX := cpp
 
 INCLUDE_DIR := -I./include
 SRC_DIR := ./src
