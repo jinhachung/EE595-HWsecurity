@@ -1,5 +1,5 @@
-#ifndef ARGPARSE_HPP
-#define ARGPARSE_HPP
+#ifndef ARGPARSE_H
+#define ARGPARSE_H
 #include <string.h>
 #include <string>
 #include <map>
@@ -9,14 +9,14 @@ private:
     std::map<std::string, std::string> _map;
 public:
     ArgParse();
-    void Parse(int argc, char *argv[]);
-    std::map<std::string, std::string>& GetMap();
-    std::string GetValueFromKey(std::string key);
+    void parse(int argc, char *argv[]);
+    std::map<std::string, std::string>& getMap();
+    std::string getValueFromKey(std::string key);
     // return value with type & default value specified
-    bool GetBoolFromKey(std::string key, bool df);
-    int GetIntFromKey(std::string key, int df);
-    unsigned int GetUnsignedIntFromKey(std::string key, unsigned int df);
-    std::string GetStringFromKey(std::string key, std::string df);
+    bool getBoolFromKey(std::string key, bool df);
+    int getIntFromKey(std::string key, int df);
+    unsigned int getUnsignedIntFromKey(std::string key, unsigned int df);
+    std::string getStringFromKey(std::string key, std::string df);
 }; // class ArgParse
 
-#endif // ARGPARSE_HPP
+#endif // ARGPARSE_H
