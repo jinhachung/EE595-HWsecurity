@@ -1,5 +1,3 @@
-vector_add: vector-add
-
 VECTOR_ADD := ./bin/vector_add
 
 CC := g++
@@ -17,7 +15,7 @@ LIBS :=
 SRC = $(wildcard $(SRC_DIR)/*.$(CPP_SUFFIX))
 
 # vector add
-vector-add: $(BENCHMARKS_DIR)/vector_add.cpp
+vector_add: $(BENCHMARKS_DIR)/vector_add.cpp
 	$(CC) $(INCLUDE_DIR) $(CFLAGS) $(LDFLAGS) $(SRC) $(BENCHMARKS_DIR)/vector_add.cpp -o $(VECTOR_ADD) $(LIBS)
 
 clean:
