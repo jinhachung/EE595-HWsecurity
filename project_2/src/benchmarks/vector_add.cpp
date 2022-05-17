@@ -110,7 +110,10 @@ int main(int argc, char *argv[]) {
     free(arrayB);
     free(arrayC);
     // get average of durations
-    average = std::accumulate(durationVector.begin(), durationVector.end(), 0) / durationVector.size();
+    //average = std::accumulate(durationVector.begin(), durationVector.end(), 0) / durationVector.size();
+    average = 0;
+    for (long val : durationVector) average += val;
+    average = (long)(average / ((long)durationVector.size()));
 
     // print results
     std::cout << "******************** [BENCHMARK RESULTS] ***********************************" << std::endl;
