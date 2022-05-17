@@ -24,7 +24,7 @@ vector_add: $(BENCHMARKS_DIR)/vector_add.cpp
 sort: $(BENCHMARKS_DIR)/sort.cpp
 	$(CC) $(INCLUDE_DIR) $(CFLAGS) $(LDFLAGS) $(SRC) $(BENCHMARKS_DIR)/sort.cpp -o $(SORT) $(LIBS)
 
-# sort
+# trided
 strided_access: $(BENCHMARKS_DIR)/strided_access.cpp
 	$(CC) $(INCLUDE_DIR) $(CFLAGS) $(LDFLAGS) $(SRC) $(BENCHMARKS_DIR)/strided_access.cpp -o $(STRIDED) $(LIBS)
 
