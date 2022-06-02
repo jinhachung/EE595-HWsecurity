@@ -14,17 +14,26 @@
 #define _MB ((long)(1 << 20))
 #define _GB ((long)(1 << 30))
 
+#define _CACHELINE_SIZE_BYTES (64)
+
 int main(int argc, char *argv[]) {
     ArgParse parser;
     int num_iter, num_warmup_iter;
     long cache_sz, arr_sz, average;
+    int num_elem;
     std::vector<long> durationVector;
     struct timespec before, after;
     int *arrayA;
+    // for 'accessing array'
+    int tmp;
+    long dummysum = 0;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dis(0, 15);
+    //int long_per_cacheline = (int)(_CACHELINE_SIZE_BYTES / sizeof(long));
+    int int_per_cacheline = (int)(_CACHELINE_SIZE_BYTES / sizeof(int));
+
+    //std::random_device rd;
+    //std::mt19937 gen(rd());
+    //std::uniform_int_distribution<int> dis(0, 15);
 
     // parse command line arguments
     parser.parse(argc, argv);
@@ -33,6 +42,7 @@ int main(int argc, char *argv[]) {
     num_warmup_iter = (int)(num_iter / 10);
     cache_sz = (long)parser.getIntFromKey("llc-size", 12); // 12MB
     arr_sz = cache_sz * _MB;
+    num_elem = (arr_sz / (sizeof(int)));
 
     if ((num_iter % 10) && (!num_iter)) {
         std::cerr << "Enter number of iterations (--num-iter) as a nonzero multiple of 10" << std::endl;
@@ -42,49 +52,47 @@ int main(int argc, char *argv[]) {
     // print config
     std::cout << "******************** [BENCHMARK CONFIG] ************************************" << std::endl;
     std::cout << "*****\t[benchmark name] " << argv[0] << std::endl;
-    // if (arr_sz_kb) std::cout << "*****\t[array size] " << arr_sz_kb << " KB" << std::endl;
-    // else if (arr_sz_mb) std::cout << "*****\t[array size] " << arr_sz_mb << " MB" << std::endl;
-    // else std::cout << "*****\t[array size] " << arr_sz_gb << " GB" << std::endl;
     std::cout << "*****\t[cache size] " << cache_sz << " MB" << std::endl;
     std::cout << "*****\t[iteration number] warmup: " << num_warmup_iter << ", measured runs: " << num_iter << std::endl;
     
-    arrayA = (int *)calloc(arr_sz, sizeof(int));
+    arrayA = (int *)calloc(num_elem, sizeof(int));
     if (!arrayA) {
         perror("calloc");
         goto ERROR_EXIT_A;
     }
     // initialize arrays
-    for (long idx = 0; idx < arr_sz; ++idx) {
+    for (long idx = 0; idx < num_elem; ++idx) {
         arrayA[idx] = (int)(idx % 10);
     }
-    // calloc already initializes to 0
-    //memset(arrayC, 0, arr_sz * sizeof(int));
     // no timer for warmup
 
-    int tmp;
 
     std::cout << "******************** [BENCHMARK WARMUP] ************************************" << std::endl;
     
-    for (int i = 0; i < 8 ; i++) {
-        for (long idx = 0; idx < arr_sz; idx+=16) {
-            tmp = arrayA[idx + dis(gen)];
+    for (int iter = 0; iter < num_warmup_iter; ++iter) {
+        for (int i = 0; i < 8 ; i++) {
+            for (long idx = 0; idx < num_elem; idx += int_per_cacheline) {
+                //tmp = arrayA[idx + dis(gen)];
+                tmp = arrayA[idx];
+                dummysum += tmp;
+            }
         }
     }
 
     std::cout << "******************** [RUNNING BENCHMARK] ***********************************" << std::endl;
 
     for (int iter = 0; iter < num_iter; ++iter) {
+        dummysum = 0;
         clock_gettime(CLOCK_MONOTONIC, &before);
         for (int i = 0; i < 8 ; i++) {
-            for (long idx = 0; idx < arr_sz; idx+=16) {
-                tmp = arrayA[idx + dis(gen)];
-                tmp++;
-                arrayA[idx + dis(gen)] = tmp;
+            for (long idx = 0; idx < num_elem; idx += int_per_cacheline) {
+                //tmp = arrayA[idx + dis(gen)];
+                tmp = arrayA[idx];
+                dummysum += tmp;
+                //arrayA[idx + dis(gen)] = tmp;
             }
         }
-
         clock_gettime(CLOCK_MONOTONIC, &after);
-
         durationVector.push_back(elapsed_time_ns(after, before));
     }
 
