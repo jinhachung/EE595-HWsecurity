@@ -10,7 +10,7 @@ INCLUDE_DIR := -I./include
 SRC_DIR := ./src
 BENCHMARKS_DIR := ./src/benchmarks
 
-CFLAGS := -g -Wall -std=c++11
+CFLAGS := -g -Wall -std=c++11 -O0
 LDFLAGS :=
 LIBS :=
 
