@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 
     num_iter = parser.getIntFromKey("num-iter", 100);
     num_warmup_iter = (int)(num_iter / 10);
-    cache_sz = (long)parser.getIntFromKey("llc_size", 12); // 12MB
+    cache_sz = (long)parser.getIntFromKey("llc-size", 12); // 12MB
     arr_sz = cache_sz * _MB;
 
     if ((num_iter % 10) && (!num_iter)) {
