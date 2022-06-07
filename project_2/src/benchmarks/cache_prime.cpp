@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     long cache_sz, arr_sz;
     int num_elem;
     int *arrayA;
-    //int int_per_cacheline = (int)(_CACHELINE_SIZE_BYTES / sizeof(int));
+    int int_per_cacheline = (int)(_CACHELINE_SIZE_BYTES / sizeof(int));
     int total_access_count_cache;
     int total_access_count_memory;
     std::random_device rd;
@@ -69,8 +69,8 @@ int main(int argc, char *argv[]) {
     cache_sz = (long)parser.getIntFromKey("llc-size", 12); // 12MB
     arr_sz = cache_sz * _MB;
     num_elem = (arr_sz / (sizeof(int)));
-    total_access_count_memory = num_elem * 4;
-    total_access_count_cache = num_elem * 4;
+    total_access_count_memory = (num_elem / int_per_cacheline) * 4;;
+    total_access_count_cache = (num_elem / int_per_cacheline) * 4;
 
     // print config
     std::cout << "******************** [BENCHMARK CONFIG] ************************************" << std::endl;
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
     }
     
     std::cout << "******************** [MEASURING MEMORY ACCESS] *****************************" << std::endl;
-    for (long i = 0; i < 4 * num_elem; ++i) {
+    for (long i = 0; i < 4 * total_access_count_memory; ++i) {
         long idx = rng(gen) % num_elem;
         start = rdtsc();
         memoryAccess(arrayA + idx);
@@ -108,8 +108,9 @@ int main(int argc, char *argv[]) {
     }
 
     std::cout << "******************** [MEASURING CACHE ACCESS] ******************************" << std::endl;
-    for (long i = 0; i < 4 * num_elem; ++i) {
+    for (long i = 0; i < total_access_count_cache; ++i) {
         long idx = rng(gen) % num_elem;
+        memoryAccess(arrayA + idx);
         start = rdtsc();
         memoryAccess(arrayA + idx);
         end = rdtsc();
