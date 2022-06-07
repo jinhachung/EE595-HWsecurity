@@ -2,6 +2,7 @@ VECTOR_ADD := ./bin/vector_add
 SORT := ./bin/sort
 STRIDED := ./bin/strided_access
 CACHE_INTENSIVE := ./bin/cache_intensive
+CACHE_PROBE := ./bin/cache_probe
 
 CC := g++
 CPP_SUFFIX := cpp
@@ -35,6 +36,10 @@ strided_access: $(BENCHMARKS_DIR)/strided_access.cpp
 cache_intensive: $(BENCHMARKS_DIR)/cache_intensive.cpp
 	mkdir -p bin
 	$(CC) $(INCLUDE_DIR) $(CFLAGS) $(LDFLAGS) $(SRC) $(BENCHMARKS_DIR)/cache_intensive.cpp -o $(CACHE_INTENSIVE) $(LIBS)
+
+cache_probe: $(BENCHMARKS_DIR)/cache_probe.cpp
+	mkdir -p bin
+	$(CC) $(INCLUDE_DIR) $(CFLAGS) $(LDFLAGS) $(SRC) $(BENCHMARKS_DIR)/cache_probe.cpp -o $(CACHE_PROBE) $(LIBS)
 
 all: vector_add sort strided_access cache_intensive
 
