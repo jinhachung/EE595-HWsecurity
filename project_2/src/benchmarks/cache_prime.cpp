@@ -61,11 +61,18 @@ int main(int argc, char *argv[]) {
     uint64_t cache_access_time_min = 10000000000;
     uint64_t cache_access_time_max = 0;
     uint64_t cache_access_time_total = 0;
+    uint64_t threshold_cache_mem;
+    uint64_t threshold_scheduled = 10000;
+    int fast_memory_count = 0;
+    int sched_memory_count = 0;
+    int slow_cache_count = 0;
+    int sched_cache_count = 0;
 
     // parse command line arguments
     parser.parse(argc, argv);
 
     // we want to measure how much time it takes for all data to be fetched into cache
+    threshold_cache_mem = (uint64_t)parser.getIntFromKey("threshold", 105);
     cache_sz = (long)parser.getIntFromKey("llc-size", 12); // 12MB
     arr_sz = cache_sz * _MB;
     num_elem = (arr_sz / (sizeof(int)));
@@ -76,9 +83,9 @@ int main(int argc, char *argv[]) {
     std::cout << "******************** [BENCHMARK CONFIG] ************************************" << std::endl;
     std::cout << "*****\t[benchmark name] " << argv[0] << std::endl;
     std::cout << "*****\t[cache size] " << cache_sz << " MB" << std::endl;
-    std::cout << "*****\t[total access count] memory access: " << total_access_count_memory
-              << ", cache access: " << total_access_count_cache << std::endl;
-    
+    std::cout << "*****\t[total access count] memory access: " << total_access_count_memory << ", cache access: " << total_access_count_cache << std::endl;
+    std::cout << "*****\t[timing] [0 <-- cache --> " << threshold_cache_mem << "] [" << threshold_cache_mem + 1 << " <-- memory --> " << threshold_scheduled << "] [" << threshold_scheduled + 1 << " <-- scheduled --> oo]" << std::endl;
+
     arrayA = (int *)calloc(num_elem, sizeof(int));
     if (!arrayA) {
         perror("calloc");
@@ -91,16 +98,23 @@ int main(int argc, char *argv[]) {
     }
     
     std::cout << "******************** [MEASURING MEMORY ACCESS] *****************************" << std::endl;
-    for (long i = 0; i < 4 * total_access_count_memory; ++i) {
+    for (long i = 0; i < total_access_count_memory; ++i) {
         long idx = rng(gen) % num_elem;
         start = rdtsc();
         memoryAccess(arrayA + idx);
         end = rdtsc();
         cacheFlush(arrayA + idx);
         duration = end - start;
-        memory_access_time_min = (duration < memory_access_time_min) ? duration : memory_access_time_min;;
-        memory_access_time_max = (duration > memory_access_time_max) ? duration : memory_access_time_max;
-        memory_access_time_total += duration;
+        if (duration <= threshold_scheduled) {
+            memory_access_time_min = (duration < memory_access_time_min) ? duration : memory_access_time_min;
+            memory_access_time_max = (duration > memory_access_time_max) ? duration : memory_access_time_max;
+            memory_access_time_total += duration;
+            if (duration <= threshold_cache_mem) {
+                ++fast_memory_count;
+            }
+        } else {
+            ++sched_memory_count;
+        }
     }
     // because we flushed above for more precise measurements, refill cache
     for (long idx = 0; idx < num_elem; ++idx) {
@@ -115,19 +129,29 @@ int main(int argc, char *argv[]) {
         memoryAccess(arrayA + idx);
         end = rdtsc();
         duration = end - start;
-        cache_access_time_min = (duration < cache_access_time_min) ? duration : cache_access_time_min;;
-        cache_access_time_max = (duration > cache_access_time_max) ? duration : cache_access_time_max;
-        cache_access_time_total += duration;
+        if (duration <= threshold_scheduled) {
+            cache_access_time_min = (duration < cache_access_time_min) ? duration : cache_access_time_min;;
+            cache_access_time_max = (duration > cache_access_time_max) ? duration : cache_access_time_max;
+            cache_access_time_total += duration;
+            if (duration > threshold_cache_mem) {
+                ++slow_cache_count;
+            }
+        } else {
+            ++sched_cache_count;
+        }
     }
 
     free(arrayA);
 
     // print results
     std::cout << "******************** [PROBE RESULTS] ***************************************" << std::endl;
-    std::cout << "*****\t[memory access] total: " << memory_access_time_total << " cycles, average: " << memory_access_time_total / total_access_count_memory << " cycles" << std::endl;
+    std::cout << "*****\t[memory access] total: " << memory_access_time_total << " cycles, average: " << memory_access_time_total / (total_access_count_memory - sched_memory_count) << " cycles" << std::endl;
     std::cout << "*****\t[memory access] minimum: " << memory_access_time_min << " cycles, maximum: " << memory_access_time_max << " cycles" << std::endl;
-    std::cout << "*****\t[cache access] total: " << cache_access_time_total << " cycles, average: " << cache_access_time_total / total_access_count_cache << " cycles" << std::endl;
+    std::cout << "*****\t[cache access] total: " << cache_access_time_total << " cycles, average: " << cache_access_time_total / (total_access_count_cache - sched_cache_count) << " cycles" << std::endl;
     std::cout << "*****\t[cache access] minimum: " << cache_access_time_min << " cycles, maximum: " << cache_access_time_max << " cycles" << std::endl;
+    std::cout << "******************** [THRESHOLD CORRECTNESS] *******************************" << std::endl;
+    std::cout << "*****\t[memory access] total: " << total_access_count_memory << ", too fast: " << fast_memory_count << ", scheduled: " << sched_memory_count << std::endl;
+    std::cout << "*****\t[cache access] total: " << total_access_count_cache << ", too slow: " << slow_cache_count << ", scheduled: " << sched_cache_count << std::endl;
     std::cout << "****************************************************************************" << std::endl;
 
     return 0;
