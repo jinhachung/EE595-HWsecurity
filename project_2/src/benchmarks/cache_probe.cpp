@@ -106,9 +106,9 @@ int main(int argc, char *argv[]) {
 
     // print results
     std::cout << "******************** [BENCHMARK RESULTS] ***********************************" << std::endl;
-    std::cout << "*****\t[memory access] total: " << memory_access_time_total << " ns, average: " << memory_access_time_total / num_elem << " ns" << std::endl;
+    std::cout << "*****\t[memory access] total: " << memory_access_time_total << " ns, average: " << memory_access_time_total / (num_elem / int_per_cacheline) << " ns" << std::endl;
     std::cout << "*****\t[memory access] minimum: " << memory_access_time_min << " ns, maximum: " << memory_access_time_max << " ns" << std::endl;
-    std::cout << "*****\t[cache access] total: " << cache_access_time_total << " ns, average: " << cache_access_time_total / num_elem << " ns" << std::endl;
+    std::cout << "*****\t[cache access] total: " << cache_access_time_total << " ns, average: " << cache_access_time_total / (num_elem / int_per_cacheline) << " ns" << std::endl;
     std::cout << "*****\t[cache access] minimum: " << cache_access_time_min << " ns, maximum: " << cache_access_time_max << " ns" << std::endl;
     std::cout << "****************************************************************************" << std::endl;
 
